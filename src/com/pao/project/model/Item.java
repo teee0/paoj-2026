@@ -5,20 +5,23 @@ public abstract class Item implements Comparable<Item> {
     protected String id;
     protected String titlu;
     protected int anAparitie;
+    protected Autor autor; // Autorul este acum la nivel de Item
 
-    public Item(String id, String titlu, int anAparitie) {
+    public Item(String id, String titlu, int anAparitie, Autor autor) {
         this.id = id;
         this.titlu = titlu;
         this.anAparitie = anAparitie;
+        this.autor = autor;
     }
 
     public String getId() { return id; }
     public String getTitlu() { return titlu; }
     public int getAnAparitie() { return anAparitie; }
+    public Autor getAutor() { return autor; }
+    public void setAutor(Autor autor) { this.autor = autor; }
 
     @Override
     public int compareTo(Item altItem) {
-        // Sortare naturala dupa titlu
         return this.titlu.compareToIgnoreCase(altItem.getTitlu());
     }
 

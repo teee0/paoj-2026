@@ -47,8 +47,8 @@ public class GestiuneService {
     public void imprumutaItem(String codCititor, Item item) throws PersoanaInexistentaException, ItemNedisponibilException {
         Cititor c = cititoriMap.get(codCititor);
         if (c == null) throw new PersoanaInexistentaException("Eroare: Cititorul nu exista in sistem!");
-        if (item == null) throw new ItemNedisponibilException("Eroare: Item invalid.");
-        if (!verificaDisponibilitate(item)) throw new ItemNedisponibilException("Eroare: Itemul este deja imprumutat!");
+        if (item == null) throw new ItemNedisponibilException("Eroare: Item nu exista in sistem.");
+        if (!verificaDisponibilitate(item)) throw new ItemNedisponibilException("Eroare: Item-ul este deja imprumutat!");
 
         imprumuturiActive.add(new Imprumut(c, item));
         System.out.println("Succes: " + item.getTitlu() + " a fost imprumutat de " + c.getNume());
@@ -56,7 +56,7 @@ public class GestiuneService {
 
     public void returneazaItem(Item item) {
         imprumuturiActive.removeIf(i -> i.getItem().equals(item));
-        System.out.println("Itemul '" + item.getTitlu() + "' a fost returnat.");
+        System.out.println("Item-ul '" + item.getTitlu() + "' a fost returnat.");
     }
 
     public void afiseazaImprumuturiCititor(String codCititor) {

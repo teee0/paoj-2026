@@ -2,16 +2,19 @@
 package com.pao.project.service;
 
 import com.pao.project.model.Item;
+import com.pao.project.model.Autor;
 import java.util.*;
 
 public class CatalogService {
     private static CatalogService instance;
 
-    // Colectie sortata conform Comparable-ului definit in Item (dupa titlu)
+
     private Set<Item> catalog;
+    private Set<Autor> catalog_autor;
 
     private CatalogService() {
         catalog = new TreeSet<>();
+        catalog_autor = new TreeSet<>();
     }
 
     public static CatalogService getInstance() {
@@ -23,6 +26,19 @@ public class CatalogService {
 
     public void adaugaItem(Item item) {
         if (item != null) catalog.add(item);
+    }
+    public void adaugaAutor(Autor autor) {
+        if (autor != null) catalog_autor.add(autor);
+    }
+
+    public Autor cautaAutor(String nume)
+    {
+        for (Autor a : catalog_autor) {
+            if (a.getNume().equalsIgnoreCase(nume)) {
+                return a;
+            }
+        }
+        return null;
     }
 
     public void afiseazaCatalog() {

@@ -3,15 +3,13 @@
 
 ## Etapa I — Modelare și implementare OOP
 
-> **Deadline: joi, 24 aprilie, 23:59**
-
 ### 1. Definirea sistemului
 
 ## Proiect Bibliotecă Multimedia
 
 ### 1.1 Lista acțiunilor posibile în sistem (10 acțiuni)
 1. Adaugă un item nou (Film / Muzică) în catalog.
-2. Înregistrează un cititor/abonat nou.
+2. Înregistrează un cititor nou.
 3. Împrumută un item unui cititor.
 4. Returnează un item.
 5. Caută un item după titlu.
@@ -29,8 +27,7 @@
 5. `ItemAudiovizual`
 6. `Film`
 7. `ItemMuzica`
-8. `Imprumut`
-9. `CodIdentificare` (imutabilă)
+8. `Imprumut` (imutabil)
 
 ---
 
@@ -52,14 +49,11 @@
 
 - [x] Cel puțin **2 tipuri diferite de colecții** (`List`, `Set`, `Map`, `Queue`, etc.)
 - [x] Cel puțin **una sortată** — prin implementarea `Comparable` pe clasă sau prin `Comparator`
-  _(ex: `TreeSet<Carte>` sortate după titlu, sau `List<Student>` sortată după medie cu `Collections.sort`)_
 - [x] Cel puțin **un `Map`** folosit pentru indexare sau grupare
-  _(ex: `Map<String, List<Carte>>` — cărți grupate pe autor, `Map<String, Cont>` — conturi indexate după IBAN)_
 
 #### 2.3 — Servicii
 
 - [x] Cel puțin **2 clase de serviciu** care expun operațiile sistemului
-  _(ex: `CarteService`, `CititorService` — fiecare gestionează operații pentru un tip de obiect)_
 - [x] Fiecare serviciu implementat ca **Singleton** (constructor privat + metodă statică `getInstance()`)
 - [x] Serviciile expun cel puțin operațiile: **adaugă, șterge, caută după id/nume, listează toate**
 - [x] O clasă **`Main`** care apelează **toate cele 10 acțiuni** definite la punctul 1,
@@ -67,7 +61,7 @@
 
 #### 2.4 — Organizare și calitate
 
-- [ ] Codul organizat în **sub-pachete** logice:
+- [x] Codul organizat în **sub-pachete** logice:
   ```
   com.pao.proiect.<tema>/
   ├── model/        ← clasele de domeniu
@@ -77,38 +71,6 @@
   ```
 - [x] Fără cod duplicat — logica comună extrasă în metode sau clase de bază
 - [x] Fără `NullPointerException` la rulare — validează inputurile în servicii
-
----
-
-
-## Structura recomandată a proiectului
-
-```
-src/
-└── com/pao/proiect/<tema_ta>/
-    ├── Main.java
-    ├── model/
-    │   ├── Carte.java
-    │   ├── Cititor.java
-    │   └── ...
-    ├── service/
-    │   ├── CarteService.java
-    │   ├── CititorService.java
-    │   └── AuditService.java
-    ├── repository/
-    │   ├── Repository.java              ← interfața generică
-    │   ├── CarteRepository.java
-    │   └── ...
-    ├── exception/
-    │   ├── CarteNedisponibilaException.java
-    │   └── ...
-    └── util/
-        └── DatabaseConnection.java
-resources/
-    ├── schema.sql
-    └── db.properties
-README.md                                ← definirea sistemului (Etapa I, punctul 1)
-```
 
 ---
 

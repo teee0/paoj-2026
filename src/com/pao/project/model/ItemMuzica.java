@@ -1,15 +1,12 @@
 package com.pao.project.model;
 
 public class ItemMuzica extends ItemAudiovizual {
-    private String artist;
-
-    public ItemMuzica(String id, String titlu, int anAparitie, int durataMinute, String artist) {
-        super(id, titlu, anAparitie, durataMinute);
-        this.artist = artist;
+    public ItemMuzica(String id, String titlu, int anAparitie, int durataMinute, Autor autor) {
+        super(id, titlu, anAparitie, durataMinute, autor);
     }
 
     @Override
     public String toString() {
-        return "Muzica: " + titlu + " - " + artist + " (" + anAparitie + ")";
+        return "Muzica: " + titlu + " - " + autor.getNume() + " " + autor.getPrenume() + " (" + anAparitie + ")";
     }
 }
