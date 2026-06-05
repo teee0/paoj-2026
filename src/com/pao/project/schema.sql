@@ -1,0 +1,57 @@
+PRAGMA foreign_keys = ON;
+
+DROP TABLE IF EXISTS imprumut;
+DROP TABLE IF EXISTS film;
+DROP TABLE IF EXISTS muzica;
+DROP TABLE IF EXISTS item;
+DROP TABLE IF EXISTS cititor;
+DROP TABLE IF EXISTS autor;
+DROP TABLE IF EXISTS persoana;
+
+CREATE TABLE persoana (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nume TEXT NOT NULL,
+    prenume TEXT NOT NULL,
+    an_nastere INTEGER NOT NULL
+);
+
+CREATE TABLE autor (
+    id INTEGER PRIMARY KEY,
+    domeniu TEXT,
+    FOREIGN KEY (id) REFERENCES persoana(id) ON DELETE CASCADE
+);
+
+CREATE TABLE cititor (
+    id INTEGER PRIMARY KEY,
+    cod TEXT NOT NULL UNIQUE,
+    FOREIGN KEY (id) REFERENCES persoana(id) ON DELETE CASCADE
+);
+
+CREATE TABLE item (
+    id TEXT PRIMARY KEY,
+    titlu TEXT NOT NULL,
+    an_aparitie INTEGER NOT NULL,
+    autor_id INTEGER,
+    FOREIGN KEY (autor_id) REFERENCES autor(id) ON DELETE SET NULL
+);
+
+CREATE TABLE film (
+    id TEXT PRIMARY KEY,
+    durata_minute INTEGER NOT NULL,
+    FOREIGN KEY (id) REFERENCES item(id) ON DELETE CASCADE
+);
+
+CREATE TABLE muzica (
+    id TEXT PRIMARY KEY,
+    durata_minute INTEGER NOT NULL,
+    FOREIGN KEY (id) REFERENCES item(id) ON DELETE CASCADE
+);
+
+CREATE TABLE imprumut (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cititor_cod TEXT NOT NULL,
+    item_id TEXT NOT NULL,
+    data_imprumut TEXT NOT NULL,
+    FOREIGN KEY (cititor_cod) REFERENCES cititor(cod) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE
+);

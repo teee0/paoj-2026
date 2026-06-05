@@ -1,20 +1,23 @@
-// Fisier: src/com/pao/project/service/CatalogService.java
 package com.pao.project.service;
 
-import com.pao.project.model.Item;
 import com.pao.project.model.Autor;
-import java.util.*;
+import com.pao.project.model.Item;
+import com.pao.project.repository.AutorRepository;
+import com.pao.project.repository.ItemRepository;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CatalogService {
     private static CatalogService instance;
 
-
-    private Set<Item> catalog;
-    private Set<Autor> catalog_autor;
+    private final AutorRepository autorRepository = new AutorRepository();
+    private final ItemRepository itemRepository = new ItemRepository();
+    private final AuditService auditService = AuditService.getInstance();
 
     private CatalogService() {
-        catalog = new TreeSet<>();
-        catalog_autor = new TreeSet<>();
     }
 
     public static CatalogService getInstance() {
@@ -25,46 +28,47 @@ public class CatalogService {
     }
 
     public void adaugaItem(Item item) {
-        if (item != null) catalog.add(item);
-    }
-    public void adaugaAutor(Autor autor) {
-        if (autor != null) catalog_autor.add(autor);
+        if (item == null) {
+            return;
+        }
+        itemRepository.save(item);
+        auditService.logActiune("adauga_item");
     }
 
-    public Autor cautaAutor(String nume)
-    {
-        for (Autor a : catalog_autor) {
-            if (a.getNume().equalsIgnoreCase(nume)) {
-                return a;
-            }
+    public void adaugaAutor(Autor autor) {
+        if (autor == null) {
+            return;
         }
-        return null;
+        autorRepository.save(autor);
+        auditService.logActiune("adauga_autor");
+    }
+
+    public Autor cautaAutor(String nume) {
+        auditService.logActiune("cauta_autor");
+        return autorRepository.findByNume(nume).orElse(null);
     }
 
     public void afiseazaCatalog() {
+        auditService.logActiune("listeaza_catalog");
         System.out.println("--- Catalog Complet ---");
-        for (Item item : catalog) {
+        for (Item item : itemRepository.findAll()) {
             System.out.println(item);
         }
     }
 
     public Item cautaDupaTitlu(String titlu) {
-        for (Item item : catalog) {
-            if (item.getTitlu().equalsIgnoreCase(titlu)) {
-                return item;
-            }
-        }
-        return null;
+        auditService.logActiune("cauta_item");
+        return itemRepository.findByTitlu(titlu).orElse(null);
     }
 
     public void afiseazaGrupatDupaTip() {
+        auditService.logActiune("grupeaza_dupa_tip");
         System.out.println("--- Itemuri grupate dupa tip (Map) ---");
         Map<String, List<Item>> grupare = new HashMap<>();
 
-        for (Item item : catalog) {
+        for (Item item : itemRepository.findAll()) {
             String tip = item.getClass().getSimpleName();
-            grupare.putIfAbsent(tip, new ArrayList<>());
-            grupare.get(tip).add(item);
+            grupare.computeIfAbsent(tip, k -> new ArrayList<>()).add(item);
         }
 
         for (Map.Entry<String, List<Item>> entry : grupare.entrySet()) {
@@ -72,6 +76,14 @@ public class CatalogService {
             for (Item i : entry.getValue()) {
                 System.out.println("  - " + i.getTitlu());
             }
+        }
+    }
+
+    public void afiseazaTopItemeImprumutate(int limit) {
+        auditService.logActiune("afiseaza_top_iteme_imprumutate");
+        System.out.println("--- Top iteme împrumutate ---");
+        for (String linie : itemRepository.findTopItemeImprumutate(limit)) {
+            System.out.println(linie);
         }
     }
 }

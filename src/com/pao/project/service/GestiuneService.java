@@ -1,22 +1,21 @@
-// Fisier: src/com/pao/project/service/GestiuneService.java
 package com.pao.project.service;
 
 import com.pao.project.exception.ItemNedisponibilException;
 import com.pao.project.exception.PersoanaInexistentaException;
-import com.pao.project.model.*;
-
-import java.util.*;
+import com.pao.project.model.Cititor;
+import com.pao.project.model.Imprumut;
+import com.pao.project.model.Item;
+import com.pao.project.repository.CititorRepository;
+import com.pao.project.repository.ImprumutRepository;
 
 public class GestiuneService {
     private static GestiuneService instance;
 
-    // Map pentru cititori indexati dupa cod
-    private Map<String, Cititor> cititoriMap;
-    private List<Imprumut> imprumuturiActive;
+    private final CititorRepository cititorRepository = new CititorRepository();
+    private final ImprumutRepository imprumutRepository = new ImprumutRepository();
+    private final AuditService auditService = AuditService.getInstance();
 
     private GestiuneService() {
-        cititoriMap = new HashMap<>();
-        imprumuturiActive = new ArrayList<>();
     }
 
     public static GestiuneService getInstance() {
@@ -27,47 +26,78 @@ public class GestiuneService {
     }
 
     public void inregistreazaCititor(Cititor c) {
-        if (c != null && c.getCod() != null) {
-            cititoriMap.put(c.getCod(), c);
+        if (c == null || c.getCod() == null) {
+            return;
         }
+        cititorRepository.save(c);
+        auditService.logActiune("inregistreaza_cititor");
     }
 
     public void stergeCititor(String cod) {
-        cititoriMap.remove(cod);
+        cititorRepository.deleteByCod(cod);
+        auditService.logActiune("elimina_cititor");
         System.out.println("Cititorul cu codul " + cod + " a fost sters.");
     }
 
     public boolean verificaDisponibilitate(Item item) {
-        for (Imprumut i : imprumuturiActive) {
-            if (i.getItem().equals(item)) return false; // E deja imprumutat
+        auditService.logActiune("verifica_disponibilitate");
+        if (item == null) {
+            return false;
         }
-        return true;
+        return !imprumutRepository.isItemImprumutat(item.getId());
     }
 
-    public void imprumutaItem(String codCititor, Item item) throws PersoanaInexistentaException, ItemNedisponibilException {
-        Cititor c = cititoriMap.get(codCititor);
-        if (c == null) throw new PersoanaInexistentaException("Eroare: Cititorul nu exista in sistem!");
-        if (item == null) throw new ItemNedisponibilException("Eroare: Item nu exista in sistem.");
-        if (!verificaDisponibilitate(item)) throw new ItemNedisponibilException("Eroare: Item-ul este deja imprumutat!");
+    public void imprumutaItem(String codCititor, Item item)
+            throws PersoanaInexistentaException, ItemNedisponibilException {
+        Cititor c = cititorRepository.findByCod(codCititor)
+                .orElseThrow(() -> new PersoanaInexistentaException("Eroare: Cititorul nu exista in sistem!"));
+        if (item == null) {
+            throw new ItemNedisponibilException("Eroare: Item nu exista in sistem.");
+        }
+        if (imprumutRepository.isItemImprumutat(item.getId())) {
+            throw new ItemNedisponibilException("Eroare: Item-ul este deja imprumutat!");
+        }
 
-        imprumuturiActive.add(new Imprumut(c, item));
+        imprumutRepository.save(new Imprumut(c, item));
+        auditService.logActiune("imprumuta_item");
         System.out.println("Succes: " + item.getTitlu() + " a fost imprumutat de " + c.getNume());
     }
 
     public void returneazaItem(Item item) {
-        imprumuturiActive.removeIf(i -> i.getItem().equals(item));
+        if (item == null) {
+            return;
+        }
+        imprumutRepository.deleteByItemId(item.getId());
+        auditService.logActiune("returneaza_item");
         System.out.println("Item-ul '" + item.getTitlu() + "' a fost returnat.");
     }
 
     public void afiseazaImprumuturiCititor(String codCititor) {
+        auditService.logActiune("afiseaza_imprumuturi");
         System.out.println("--- Imprumuturi pentru " + codCititor + " ---");
-        boolean gasit = false;
-        for (Imprumut i : imprumuturiActive) {
-            if (i.getCititor().getCod().equals(codCititor)) {
-                System.out.println(i);
-                gasit = true;
-            }
+        var imprumuturi = imprumutRepository.findByCititorCod(codCititor);
+        if (imprumuturi.isEmpty()) {
+            System.out.println("Niciun imprumut activ.");
+            return;
         }
-        if (!gasit) System.out.println("Niciun imprumut activ.");
+        for (Imprumut i : imprumuturi) {
+            System.out.println(i);
+        }
+    }
+
+    public void afiseazaImprumuturiActiveCuDetalii() {
+        auditService.logActiune("afiseaza_imprumuturi_active_detalii");
+        System.out.println("--- Toate împrumuturile active (JOIN) ---");
+        for (String linie : imprumutRepository.findImprumuturiActiveCuDetalii()) {
+            System.out.println(linie);
+        }
+    }
+
+    public void afiseazaCititoriCuNumarImprumuturi() {
+        auditService.logActiune("afiseaza_cititori_cu_numar_imprumuturi");
+        System.out.println("--- Cititori cu număr împrumuturi (JOIN) ---");
+        for (String linie : cititorRepository.findCititoriCuNumarImprumuturi()) {
+            System.out.println(linie);
+        }
     }
 }

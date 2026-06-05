@@ -6,7 +6,11 @@ public class Cititor extends Persoana {
     private String cod;
 
     public Cititor(String nume, String prenume, int anNastere, String cod) {
-        super(nume, prenume, anNastere);
+        this(0, nume, prenume, anNastere, cod);
+    }
+
+    public Cititor(int id, String nume, String prenume, int anNastere, String cod) {
+        super(id, nume, prenume, anNastere);
         this.cod = cod;
     }
 

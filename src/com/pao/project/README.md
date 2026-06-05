@@ -89,3 +89,48 @@
 | `Main` demonstrativ care apelează toate cele 10 acțiuni          | 1p      |
 | Organizare în pachete, fără duplicat, fără NPE                   | 1p      |
 | **Total Etapa I**                                                | **12p** |
+
+---
+
+## Etapa II — Persistență JDBC, Tranzacții și Audit
+
+### Implementare
+
+- [x] `schema.sql` + `db.properties` + `DatabaseConnection` (Singleton)
+- [x] Interfață generică `Repository<T, ID>` în `repository/`
+- [x] CRUD JDBC pentru `Autor`, `Cititor`, `Item`, `Imprumut`
+- [x] `PreparedStatement` + `try-with-resources` pentru toate interogările
+- [x] Tranzacții JDBC (`commit` / `rollback`) la operații multi-tabel
+- [x] ≥3 interogări cu `JOIN` (împrumuturi active, cititori cu număr împrumuturi, top iteme)
+- [x] `AuditService` thread-safe → scrie în `audit.csv` (append)
+
+### Rulare locală (SQLite)
+
+1. Driverul SQLite JDBC este în `lib/sqlite-jdbc-3.46.1.0.jar` — adaugă-l în classpath (IntelliJ: Add as Library)
+2. Rulează `com.pao.project.Main` din rădăcina proiectului (`paoj-2026/`)
+3. Baza de date se creează/reinițializează automat în `data/paoj_proiect.db`
+4. Fișierul de audit: `audit.csv` în directorul de lucru curent
+
+**Terminal (macOS/zsh):**
+```bash
+# ești deja în folderul proiectului — NU mai face cd paoj-2026
+CP="lib/sqlite-jdbc-3.46.1.0.jar:lib/slf4j-api-2.0.16.jar:lib/slf4j-nop-2.0.16.jar"
+mkdir -p out
+javac -cp "${CP}:src" -d out $(find src/com/pao/project -name "*.java")
+java -cp "${CP}:out:src" com.pao.project.Main
+```
+
+> **Important (zsh):** folosește `"${CP}:out:src"`, nu `"$CP:out:src"` — altfel zsh dă `bad substitution`.
+
+### Etapa II — 13 puncte din 25
+
+| Criteriu                                                              | Punctaj |
+|-----------------------------------------------------------------------|---------|
+| `schema.sql` complet (PK, ≥2 FK) + `db.properties` + `DatabaseConnection` singleton | 1p      |
+| Interfață generică `Repository<T, ID>`                                | 1p      |
+| CRUD complet pentru ≥4 entități                                       | 4p      |
+| `PreparedStatement` + `try-with-resources`                          | 2p      |
+| ≥1 tranzacție JDBC explicită                                          | 2p      |
+| ≥3 interogări SQL cu `JOIN`                                           | 2p      |
+| `AuditService` CSV thread-safe, apelat din toate cele 10 acțiuni      | 1p      |
+| **Total Etapa II**                                                    | **13p** |

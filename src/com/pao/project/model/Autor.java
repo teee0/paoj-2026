@@ -1,12 +1,16 @@
 package com.pao.project.model;
 
 import java.util.Objects;
-
+import java.lang.String;
 public class Autor extends Persoana implements Comparable<Autor>{
     private String domeniu;
 
     public Autor(String nume, String prenume, int anNastere, String domeniu) {
-        super(nume, prenume, anNastere);
+        this(0, nume, prenume, anNastere, domeniu);
+    }
+
+    public Autor(int id, String nume, String prenume, int anNastere, String domeniu) {
+        super(id, nume, prenume, anNastere);
         this.domeniu = domeniu;
     }
 
@@ -20,7 +24,7 @@ public class Autor extends Persoana implements Comparable<Autor>{
 
 
     public int compareTo(Autor altAutor) {
-        return this.nume.compareToIgnoreCase(altAutor.getNume());
+        return ( (nume+prenume).compareToIgnoreCase(altAutor.nume+altAutor.prenume) );
     }
 
     @Override
