@@ -111,17 +111,6 @@
 3. Baza de date se creează/reinițializează automat în `data/paoj_proiect.db`
 4. Fișierul de audit: `audit.csv` în directorul de lucru curent
 
-**Terminal (macOS/zsh):**
-```bash
-# ești deja în folderul proiectului — NU mai face cd paoj-2026
-CP="lib/sqlite-jdbc-3.46.1.0.jar:lib/slf4j-api-2.0.16.jar:lib/slf4j-nop-2.0.16.jar"
-mkdir -p out
-javac -cp "${CP}:src" -d out $(find src/com/pao/project -name "*.java")
-java -cp "${CP}:out:src" com.pao.project.Main
-```
-
-> **Important (zsh):** folosește `"${CP}:out:src"`, nu `"$CP:out:src"` — altfel zsh dă `bad substitution`.
-
 ### Etapa II — 13 puncte din 25
 
 | Criteriu                                                              | Punctaj |
